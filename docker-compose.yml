@@ -2,7 +2,7 @@ services:
   # ─── PostgreSQL with pgvector ─────────────────────────────────────
   postgres:
     image: pgvector/pgvector:pg17
-    container_name: kh-hindsight-pg
+    container_name: cb-hindsight-pg
     restart: unless-stopped
     command: >
       postgres
@@ -16,7 +16,7 @@ services:
       POSTGRES_PASSWORD: ${HINDSIGHT_DB_PASSWORD:?Set HINDSIGHT_DB_PASSWORD}
       POSTGRES_DB: hindsight
     volumes:
-      - kh_hindsight_pgdata:/var/lib/postgresql/data
+      - cb_hindsight_pgdata:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U hindsight -d hindsight"]
       interval: 5s
@@ -27,7 +27,7 @@ services:
   # ─── Hindsight API ────────────────────────────────────────────────
   hindsight:
     image: ghcr.io/vectorize-io/hindsight:latest
-    container_name: kh-hindsight
+    container_name: cb-hindsight
     restart: unless-stopped
     depends_on:
       postgres:
@@ -35,14 +35,11 @@ services:
     ports:
       - "127.0.0.1:8888:8888"
       - "127.0.0.1:9999:9999"
-      - "100.107.71.21:8888:8888"
-      - "100.107.71.21:9999:9999"
     environment:
       HINDSIGHT_API_DATABASE_URL: "postgresql://hindsight:${HINDSIGHT_DB_PASSWORD}@postgres:5432/hindsight"
-      HINDSIGHT_API_LLM_PROVIDER: openai
-      HINDSIGHT_API_LLM_MODEL: gpt-4o-mini
-      HINDSIGHT_API_LLM_API_KEY: ${OPENAI_API_KEY:?Set OPENAI_API_KEY}
-      HINDSIGHT_API_LLM_BASE_URL: https://api.openai.com/v1
+      HINDSIGHT_API_LLM_PROVIDER: anthropic
+      HINDSIGHT_API_LLM_MODEL: claude-sonnet-4-6
+      HINDSIGHT_API_LLM_API_KEY: ${ANTHROPIC_API_KEY:?Set ANTHROPIC_API_KEY}
       HINDSIGHT_API_EMBEDDINGS_PROVIDER: local
       HINDSIGHT_API_EMBEDDINGS_LOCAL_MODEL: BAAI/bge-small-en-v1.5
       HINDSIGHT_API_VECTOR_EXTENSION: pgvector
@@ -52,7 +49,7 @@ services:
       HINDSIGHT_API_LOG_LEVEL: info
       HINDSIGHT_ENABLE_API: "true"
       HINDSIGHT_ENABLE_CP: "true"
-      HINDSIGHT_CP_DATAPLANE_API_URL: "http://100.107.71.21:8888"
+      HINDSIGHT_CP_DATAPLANE_API_URL: "http://100.115.251.23:8888"
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:8888/health"]
       interval: 10s
@@ -64,9 +61,9 @@ services:
   hindsight-cdc:
     build:
       context: ./hindsight-cdc
-    container_name: kh-hindsight-cdc
+    container_name: cb-hindsight-cdc
     restart: unless-stopped
-    network_mode: "container:kh-hindsight"
+    network_mode: "container:cb-hindsight"
     depends_on:
       hindsight:
         condition: service_healthy
@@ -76,4 +73,4 @@ services:
       PG_BIN: /usr/bin
 
 volumes:
-  kh_hindsight_pgdata:
+  cb_hindsight_pgdata:
