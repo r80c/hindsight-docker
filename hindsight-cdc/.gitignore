@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+.env
+state.json
+/pg18-bin/
+/pg18-lib/
