@@ -64,7 +64,6 @@ services:
       context: ./hindsight-cdc
     container_name: cb-hindsight-cdc
     restart: unless-stopped
-    network_mode: "container:cb-hindsight"
     depends_on:
       hindsight:
         condition: service_healthy
