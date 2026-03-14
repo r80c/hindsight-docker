@@ -9,6 +9,14 @@ services:
       -c wal_level=logical
       -c max_replication_slots=4
       -c max_wal_senders=4
+      -c shared_buffers=2GB
+      -c work_mem=128MB
+      -c effective_cache_size=16GB
+      -c random_page_cost=1.1
+      -c maintenance_work_mem=512MB
+      -c max_parallel_workers_per_gather=2
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=64MB
     ports:
       - "127.0.0.1:5434:5432"
     environment:
@@ -22,7 +30,7 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
-    shm_size: 256mb
+    shm_size: 4gb
 
   # ─── Hindsight API ────────────────────────────────────────────────
   hindsight:
@@ -48,6 +56,10 @@ services:
       HINDSIGHT_API_PORT: "8888"
       HINDSIGHT_API_HOST: "0.0.0.0"
       HINDSIGHT_API_LOG_LEVEL: info
+      HINDSIGHT_API_WORKER_MAX_SLOTS: "12"
+      HINDSIGHT_API_WORKER_CONSOLIDATION_MAX_SLOTS: "3"
+      HINDSIGHT_API_CONSOLIDATION_BATCH_SIZE: "50"
+      HINDSIGHT_API_LLM_MAX_CONCURRENT: "64"
       HINDSIGHT_ENABLE_API: "true"
       HINDSIGHT_ENABLE_CP: "true"
       HINDSIGHT_CP_DATAPLANE_API_URL: "http://100.115.251.23:8888"
@@ -63,7 +75,9 @@ services:
     build:
       context: ./hindsight-cdc
     container_name: cb-hindsight-cdc
-    restart: unless-stopped
+    restart: "no"
+    profiles:
+      - cdc
     depends_on:
       hindsight:
         condition: service_healthy
