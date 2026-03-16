@@ -62,7 +62,7 @@ services:
       HINDSIGHT_API_LLM_MAX_CONCURRENT: "64"
       HINDSIGHT_ENABLE_API: "true"
       HINDSIGHT_ENABLE_CP: "true"
-      HINDSIGHT_CP_DATAPLANE_API_URL: "http://100.115.251.23:8888"
+      HINDSIGHT_CP_DATAPLANE_API_URL: "http://100.111.143.9:8888"
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:8888/health"]
       interval: 10s
