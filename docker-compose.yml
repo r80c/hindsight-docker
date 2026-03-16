@@ -35,8 +35,8 @@ services:
     ports:
       - "127.0.0.1:8888:8888"
       - "127.0.0.1:9999:9999"
-      - "100.107.71.21:8888:8888"
-      - "100.107.71.21:9999:9999"
+      - "100.110.133.1:8888:8888"
+      - "100.110.133.1:9999:9999"
     environment:
       HINDSIGHT_API_DATABASE_URL: "postgresql://hindsight:${HINDSIGHT_DB_PASSWORD}@postgres:5432/hindsight"
       HINDSIGHT_API_LLM_PROVIDER: openai
@@ -52,7 +52,7 @@ services:
       HINDSIGHT_API_LOG_LEVEL: info
       HINDSIGHT_ENABLE_API: "true"
       HINDSIGHT_ENABLE_CP: "true"
-      HINDSIGHT_CP_DATAPLANE_API_URL: "http://100.107.71.21:8888"
+      HINDSIGHT_CP_DATAPLANE_API_URL: "http://100.110.133.1:8888"
     healthcheck:
       test: ["CMD", "curl", "-sf", "http://localhost:8888/health"]
       interval: 10s
